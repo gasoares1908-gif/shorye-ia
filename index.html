@@ -272,7 +272,7 @@
 
         initializeApp(firebaseConfig);
 
-        // Modelos atualizados para gemini-3.8-flash
+        // Modelo gemini-3.8-flash configurado para todos os modos
         const MODES = {
             basic: {
                 name: "Shorye Basic",
@@ -378,6 +378,10 @@
             activeModelLabel.textContent = `Model: ${modeInfo.model}`;
 
             chatHistory = JSON.parse(localStorage.getItem('shorye_history_' + currentMode)) || [];
+            
+            // Remove mensagens de erro antigas salvas para não reenviar para a API
+            chatHistory = chatHistory.filter(msg => msg.parts && msg.parts[0] && !msg.parts[0].text.includes("Erro de Comunicação"));
+
             renderPresets(modeInfo.presets);
             renderChatHistory();
         };
@@ -409,13 +413,10 @@
         });
 
         clearChatBtn.addEventListener('click', () => {
-            if (chatHistory.length === 0) return;
-            if (confirm(`Deseja limpar o histórico do modo ${MODES[currentMode].name}?`)) {
-                chatHistory = [];
-                localStorage.removeItem('shorye_history_' + currentMode);
-                renderChatHistory();
-                showToast('Histórico apagado!');
-            }
+            chatHistory = [];
+            localStorage.removeItem('shorye_history_' + currentMode);
+            renderChatHistory();
+            showToast('Histórico apagado!');
         });
 
         userInput.addEventListener('keydown', (e) => {
@@ -564,8 +565,11 @@
             const activeKey = customApiKey || firebaseConfig.apiKey;
             const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modeInfo.model}:generateContent?key=${activeKey}`;
 
+            // Filtra o histórico antes do envio para eliminar mensagens de erro acumuladas
+            const cleanHistory = history.filter(h => h.parts && h.parts[0] && !h.parts[0].text.includes("Erro de Comunicação"));
+
             const payload = {
-                contents: history,
+                contents: cleanHistory,
                 systemInstruction: {
                     parts: [{ text: modeInfo.systemInstruction }]
                 }
