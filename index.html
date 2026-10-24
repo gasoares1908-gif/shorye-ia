@@ -272,7 +272,6 @@
 
         initializeApp(firebaseConfig);
 
-        // Modelos atualizados para gemini-1.5-flash (totalmente estável para chaves de API)
         const MODES = {
             basic: {
                 name: "Shorye Basic",
@@ -562,7 +561,7 @@
             };
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout estendido para 30s
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
 
             try {
                 const res = await fetch(endpoint, {
