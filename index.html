@@ -217,7 +217,7 @@
             </form>
             <div class="flex items-center justify-between text-[10px] text-zinc-500 mt-2 px-1 font-mono">
                 <span>Firebase Connected &bull; shorye-ia</span>
-                <span id="activeModelLabel">Model: gemini-3.8-flash</span>
+                <span id="activeModelLabel">Model: gemini-1.5-flash</span>
             </div>
         </div>
     </main>
@@ -272,11 +272,11 @@
 
         initializeApp(firebaseConfig);
 
-        // Modelos atualizados para gemini-3.8-flash conforme exigido pela API
+        // Modelos atualizados para gemini-1.5-flash (totalmente estável para chaves de API)
         const MODES = {
             basic: {
                 name: "Shorye Basic",
-                model: "gemini-3.8-flash",
+                model: "gemini-1.5-flash",
                 description: "Respostas diretas, rápidas e simples sem enrolação.",
                 systemInstruction: "Você é o Shorye IA no modo Basic. Responda de forma rápida, curta, objetiva e clara.",
                 presets: [
@@ -287,7 +287,7 @@
             },
             medium: {
                 name: "Shorye Medium",
-                model: "gemini-3.8-flash", 
+                model: "gemini-1.5-flash", 
                 description: "Inteligência analítica avançada e detalhada.",
                 systemInstruction: "Você é o Shorye IA no modo Medium. Você possui raciocínio detalhado, capacidade de criar análises profundas e textos criativos.",
                 presets: [
@@ -298,7 +298,7 @@
             },
             pro: {
                 name: "Shorye Pro",
-                model: "gemini-3.8-flash",
+                model: "gemini-1.5-flash",
                 description: "Especialista em Programação C++, Arquitetura de Software e Aplicações Web.",
                 systemInstruction: "Você é o Shorye IA no modo Pro, um Engenheiro de Software Sênior especializado em C++, desenvolvimento web completo (HTML5/CSS/JS) e arquitetura de sistemas.",
                 presets: [
@@ -541,7 +541,7 @@
             } catch (err) {
                 removeTypingIndicator();
                 showToast(err.message, 'fa-triangle-exclamation text-amber-400');
-                appendMessageUI('model', `⚠️ **Erro de Comunicação:** ${err.message}. Dica: Clique na chave (🔑) no topo e insira uma chave de API pessoal do Google AI Studio.`);
+                appendMessageUI('model', `⚠️ **Erro de Comunicação:** ${err.message}. Dica: Clique na chave (🔑) no topo e verifique sua chave de API pessoal do Google AI Studio.`);
             } finally {
                 isGenerating = false;
                 sendBtn.disabled = false;
@@ -562,7 +562,7 @@
             };
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 20000);
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // Timeout estendido para 30s
 
             try {
                 const res = await fetch(endpoint, {
