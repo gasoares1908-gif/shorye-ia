@@ -155,13 +155,13 @@
             </div>
 
             <div class="hidden sm:flex items-center bg-zinc-950 p-1 rounded-xl border border-zinc-800 space-x-1">
-                <button id="btn-mode-basic" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 bg-zinc-800 text-white shadow-sm">
+                <button id="btn-mode-basic" data-mode="basic" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 bg-zinc-800 text-white shadow-sm">
                     <i class="fa-solid fa-bolt text-[10px]"></i> Basic
                 </button>
-                <button id="btn-mode-medium" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition-all flex items-center gap-1.5">
+                <button id="btn-mode-medium" data-mode="medium" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition-all flex items-center gap-1.5">
                     <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> Medium
                 </button>
-                <button id="btn-mode-pro" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition-all flex items-center gap-1.5">
+                <button id="btn-mode-pro" data-mode="pro" class="mode-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-zinc-400 hover:text-white transition-all flex items-center gap-1.5">
                     <i class="fa-solid fa-code text-[10px]"></i> Pro
                 </button>
             </div>
@@ -193,7 +193,7 @@
                 </div>
                 <h2 class="text-2xl font-bold mb-2 text-white">Shorye IA</h2>
                 <p id="modeDescription" class="text-zinc-400 max-w-md text-xs mb-8 leading-relaxed">
-                    Modo Basic: Respostas diretas, rápidas e eficientes para conversas do dia a dia.
+                    Modo Basic: Respostas diretas, rápidas e simples sem enrolação.
                 </p>
                 <div id="presetContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl text-left"></div>
             </div>
@@ -233,7 +233,7 @@
                 </button>
             </div>
             <p class="text-xs text-zinc-400 leading-relaxed">
-                Insira sua chave de API pessoal da Groq (começa com <code class="text-white">gsk_...</code>) obtida em <a href="https://console.groq.com" target="_blank" class="underline text-zinc-200">console.groq.com</a>.
+                Insira sua chave de API pessoal da Groq (<code class="text-white">gsk_...</code>) obtida gratuitamente em <a href="https://console.groq.com" target="_blank" class="underline text-zinc-200">console.groq.com</a>.
             </p>
             <div>
                 <label class="block text-[11px] font-semibold text-zinc-400 mb-1 uppercase tracking-wider">Chave API (Groq)</label>
@@ -323,13 +323,15 @@
             const validLang = hljs.getLanguage(language) ? language : 'plaintext';
             const highlighted = hljs.highlight(code, { language: validLang }).value;
             const codeId = 'code-' + Math.random().toString(36).substring(2, 9);
+            
+            // Armazena o código globalmente para o botão de copiar
             window[codeId] = code;
 
             return `
                 <div class="code-block-wrapper">
                     <div class="code-block-header">
                         <span><i class="fa-solid fa-code text-[10px] mr-1"></i> ${validLang.toUpperCase()}</span>
-                        <button onclick="window.copyStoredCode('${codeId}')" class="hover:text-white transition-colors flex items-center gap-1 text-[11px]">
+                        <button type="button" data-copy-id="${codeId}" class="copy-code-btn hover:text-white transition-colors flex items-center gap-1 text-[11px]">
                             <i class="fa-regular fa-copy"></i> Copiar Código
                         </button>
                     </div>
@@ -339,12 +341,12 @@
         };
         marked.setOptions({ renderer });
 
-        window.sendCurrentPrompt = (promptText) => {
-            userInput.value = promptText;
+        function sendPromptText(text) {
+            userInput.value = text;
             chatForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-        };
+        }
 
-        window.setMode = (modeKey) => {
+        function setMode(modeKey) {
             if (!MODES[modeKey]) return;
             currentMode = modeKey;
 
@@ -365,16 +367,18 @@
             chatHistory = JSON.parse(localStorage.getItem('shorye_groq_history_' + currentMode)) || [];
             renderPresets(modeInfo.presets);
             renderChatHistory();
-        };
-
-        document.getElementById('btn-mode-basic').addEventListener('click', () => window.setMode('basic'));
-        document.getElementById('btn-mode-medium').addEventListener('click', () => window.setMode('medium'));
-        document.getElementById('btn-mode-pro').addEventListener('click', () => window.setMode('pro'));
-        
-        if (mobileModeSelect) {
-            mobileModeSelect.addEventListener('change', (e) => window.setMode(e.target.value));
         }
 
+        // Eventos dos botões de modo
+        document.getElementById('btn-mode-basic').addEventListener('click', () => setMode('basic'));
+        document.getElementById('btn-mode-medium').addEventListener('click', () => setMode('medium'));
+        document.getElementById('btn-mode-pro').addEventListener('click', () => setMode('pro'));
+
+        if (mobileModeSelect) {
+            mobileModeSelect.addEventListener('change', (e) => setMode(e.target.value));
+        }
+
+        // Modal de Chave API
         openKeyModal.addEventListener('click', () => {
             apiKeyInput.value = customApiKey;
             keyModal.classList.remove('hidden');
@@ -393,6 +397,7 @@
             showToast('Chave API da Groq salva!');
         });
 
+        // Limpar Conversa
         clearChatBtn.addEventListener('click', () => {
             if (chatHistory.length === 0) return;
             if (confirm(`Deseja limpar o histórico do modo ${MODES[currentMode].name}?`)) {
@@ -417,7 +422,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             updateKeyStatus();
-            window.setMode(currentMode);
+            setMode(currentMode);
         });
 
         function renderPresets(presets) {
@@ -426,7 +431,7 @@
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.className = "p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 transition-all text-left group flex flex-col justify-between cursor-pointer";
-                btn.onclick = () => window.sendCurrentPrompt(p.prompt);
+                btn.addEventListener('click', () => sendPromptText(p.prompt));
                 btn.innerHTML = `
                     <div class="text-zinc-400 group-hover:text-white mb-2 transition-colors">
                         <i class="fa-solid ${p.icon} text-base"></i>
@@ -474,7 +479,7 @@
                             ${bodyHTML}
                         </div>
                         ${!isUser ? `
-                        <button onclick="window.copyStoredCode('${msgId}')" class="absolute -bottom-5 right-1 opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-white text-[11px] transition-opacity p-1 flex items-center gap-1" title="Copiar resposta">
+                        <button type="button" data-copy-id="${msgId}" class="copy-code-btn absolute -bottom-5 right-1 opacity-0 group-hover:opacity-100 text-zinc-500 hover:text-white text-[11px] transition-opacity p-1 flex items-center gap-1" title="Copiar resposta">
                             <i class="fa-regular fa-copy"></i> Copiar
                         </button>
                         ` : ''}
@@ -482,6 +487,19 @@
                 </div>
             `;
             chatContainer.appendChild(msgDiv);
+            
+            // Adiciona evento de clique no botão de copiar recém-criado
+            msgDiv.querySelectorAll('.copy-code-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const codeToCopy = window[btn.getAttribute('data-copy-id')];
+                    if (codeToCopy) {
+                        navigator.clipboard.writeText(codeToCopy).then(() => {
+                            showToast('Copiado para a área de transferência!');
+                        });
+                    }
+                });
+            });
+
             scrollToBottom();
         }
 
@@ -514,3 +532,116 @@
 
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text || isGenerating) return;
+
+            if (!customApiKey) {
+                showToast('Insira sua chave API da Groq nas configurações (🔑)!', 'fa-triangle-exclamation text-amber-400');
+                keyModal.classList.remove('hidden');
+                return;
+            }
+
+            appendMessageUI('user', text);
+            userInput.value = '';
+            userInput.style.height = 'auto';
+
+            chatHistory.push({ role: 'user', content: text });
+
+            appendTypingIndicator();
+            isGenerating = true;
+            sendBtn.disabled = true;
+
+            try {
+                const responseText = await fetchGroqAPI(chatHistory);
+                removeTypingIndicator();
+                appendMessageUI('assistant', responseText);
+                chatHistory.push({ role: 'assistant', content: responseText });
+                localStorage.setItem('shorye_groq_history_' + currentMode, JSON.stringify(chatHistory));
+            } catch (err) {
+                removeTypingIndicator();
+                showToast(err.message, 'fa-triangle-exclamation text-amber-400');
+                appendMessageUI('assistant', `⚠️ **Erro de Comunicação:** ${err.message}. Verifique se a sua chave da Groq está correta.`);
+            } finally {
+                isGenerating = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        });
+
+        async function fetchGroqAPI(history) {
+            const modeInfo = MODES[currentMode];
+            const endpoint = "https://api.groq.com/openai/v1/chat/completions";
+
+            const messages = [
+                { role: "system", content: modeInfo.systemInstruction },
+                ...history.map(h => ({ role: h.role, content: h.content }))
+            ];
+
+            const payload = {
+                model: modeInfo.model,
+                messages: messages,
+                temperature: 0.7
+            };
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${customApiKey}`
+                    },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.error?.message || `Erro HTTP (${res.status})`);
+                }
+
+                const assistantMessage = data.choices?.[0]?.message?.content;
+                if (assistantMessage) {
+                    return assistantMessage;
+                } else {
+                    throw new Error("A resposta da API veio vazia.");
+                }
+            } catch (err) {
+                if (err.name === 'AbortError') {
+                    throw new Error("A requisição demorou muito e expirou (Timeout).");
+                }
+                throw err;
+            }
+        }
+
+        function updateKeyStatus() {
+            if (customApiKey) {
+                if(keyStatusDot) keyStatusDot.className = "absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500";
+            } else {
+                if(keyStatusDot) keyStatusDot.className = "absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500";
+            }
+        }
+
+        function showToast(msg, icon = 'fa-check text-emerald-400') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastIcon.className = `fa-solid ${icon}`;
+            toastMsg.textContent = msg;
+
+            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            }, 3000);
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+    </script>
+</body>
+</html>
