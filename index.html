@@ -217,7 +217,7 @@
             </form>
             <div class="flex items-center justify-between text-[10px] text-zinc-500 mt-2 px-1 font-mono">
                 <span>Firebase Connected &bull; shorye-ia</span>
-                <span id="activeModelLabel">Model: gemini-1.5-flash</span>
+                <span id="activeModelLabel">Model: gemini-2.5-flash</span>
             </div>
         </div>
     </main>
@@ -272,10 +272,11 @@
 
         initializeApp(firebaseConfig);
 
+        // Modelos atualizados para gemini-2.5-flash
         const MODES = {
             basic: {
                 name: "Shorye Basic",
-                model: "gemini-1.5-flash",
+                model: "gemini-2.5-flash",
                 description: "Respostas diretas, rápidas e simples sem enrolação.",
                 systemInstruction: "Você é o Shorye IA no modo Basic. Responda de forma rápida, curta, objetiva e clara.",
                 presets: [
@@ -286,7 +287,7 @@
             },
             medium: {
                 name: "Shorye Medium",
-                model: "gemini-1.5-flash", 
+                model: "gemini-2.5-flash", 
                 description: "Inteligência analítica avançada e detalhada.",
                 systemInstruction: "Você é o Shorye IA no modo Medium. Você possui raciocínio detalhado, capacidade de criar análises profundas e textos criativos.",
                 presets: [
@@ -297,7 +298,7 @@
             },
             pro: {
                 name: "Shorye Pro",
-                model: "gemini-1.5-flash",
+                model: "gemini-2.5-flash",
                 description: "Especialista em Programação C++, Arquitetura de Software e Aplicações Web.",
                 systemInstruction: "Você é o Shorye IA no modo Pro, um Engenheiro de Software Sênior especializado em C++, desenvolvimento web completo (HTML5/CSS/JS) e arquitetura de sistemas.",
                 presets: [
@@ -389,23 +390,33 @@
             mobileModeSelect.addEventListener('change', (e) => window.setMode(e.target.value));
         }
 
-        openKeyModal.onclick = () => {
+        openKeyModal.addEventListener('click', () => {
             geminiKeyInput.value = customApiKey;
             keyModal.classList.remove('hidden');
-        };
+        });
 
-        closeKeyModal.onclick = () => {
+        closeKeyModal.addEventListener('click', () => {
             keyModal.classList.add('hidden');
-        };
+        });
 
-        saveKeyBtn.onclick = () => {
+        saveKeyBtn.addEventListener('click', () => {
             const val = geminiKeyInput.value.trim();
             customApiKey = val;
             localStorage.setItem('shorye_custom_gemini_key', val);
             updateKeyStatus();
             keyModal.classList.add('hidden');
             showToast('Chave API atualizada!');
-        };
+        });
+
+        clearChatBtn.addEventListener('click', () => {
+            if (chatHistory.length === 0) return;
+            if (confirm(`Deseja limpar o histórico do modo ${MODES[currentMode].name}?`)) {
+                chatHistory = [];
+                localStorage.removeItem('shorye_history_' + currentMode);
+                renderChatHistory();
+                showToast('Histórico apagado!');
+            }
+        });
 
         userInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -598,16 +609,6 @@
                 keyStatusDot.className = "absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500";
             }
         }
-
-        clearChatBtn.onclick = () => {
-            if (chatHistory.length === 0) return;
-            if (confirm(`Deseja limpar o histórico do modo ${MODES[currentMode].name}?`)) {
-                chatHistory = [];
-                localStorage.removeItem('shorye_history_' + currentMode);
-                renderChatHistory();
-                showToast('Histórico apagado!');
-            }
-        };
 
         window.copyStoredCode = (id) => {
             const val = window[id];
