@@ -193,7 +193,7 @@
                 </div>
                 <h2 class="text-2xl font-bold mb-2 text-white">Shorye IA</h2>
                 <p id="modeDescription" class="text-zinc-400 max-w-md text-xs mb-8 leading-relaxed">
-                    Modo Basic: Respostas diretas, rápidas e eficientes para conversas do dia a dia.
+                    Modo Basic: Respostas diretas, rápidas e simples sem enrolação.
                 </p>
                 <div id="presetContainer" class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-2xl text-left"></div>
             </div>
@@ -216,8 +216,8 @@
                 </button>
             </form>
             <div class="flex items-center justify-between text-[10px] text-zinc-500 mt-2 px-1 font-mono">
-                <span>Powered by Groq &bull; Llama 3.2</span>
-                <span id="activeModelLabel">Model: llama-3.2-3b-preview</span>
+                <span>Powered by Groq &bull; Llama 3.3</span>
+                <span id="activeModelLabel">Model: llama-3.3-70b-specdec</span>
             </div>
         </div>
     </main>
@@ -261,7 +261,7 @@
         const MODES = {
             basic: {
                 name: "Shorye Basic",
-                model: "llama-3.2-3b-preview",
+                model: "llama-3.3-70b-specdec",
                 description: "Respostas diretas, rápidas e simples sem enrolação.",
                 systemInstruction: "Você é o Shorye IA no modo Basic. Responda de forma rápida, curta, objetiva e clara em português do Brasil.",
                 presets: [
@@ -272,7 +272,7 @@
             },
             medium: {
                 name: "Shorye Medium",
-                model: "llama-3.2-3b-preview", 
+                model: "llama-3.3-70b-specdec", 
                 description: "Inteligência analítica avançada e detalhada.",
                 systemInstruction: "Você é o Shorye IA no modo Medium. Você possui raciocínio detalhado, capacidade de criar análises profundas e textos criativos em português do Brasil.",
                 presets: [
@@ -283,7 +283,7 @@
             },
             pro: {
                 name: "Shorye Pro",
-                model: "llama-3.2-3b-preview",
+                model: "llama-3.3-70b-specdec",
                 description: "Especialista em Programação C++, Arquitetura de Software e Aplicações Web.",
                 systemInstruction: "Você é o Shorye IA no modo Pro, um Engenheiro de Software Sênior especializado em C++, desenvolvimento web completo (HTML5/CSS/JS) e arquitetura de sistemas. Responda em português do Brasil.",
                 presets: [
@@ -363,6 +363,8 @@
             activeModelLabel.textContent = `Model: ${modeInfo.model}`;
 
             chatHistory = JSON.parse(localStorage.getItem('shorye_groq_history_' + currentMode)) || [];
+            chatHistory = chatHistory.filter(msg => !msg.content.includes("Erro de Comunicação") && !msg.content.includes("decommissioned") && !msg.content.includes("does not exist"));
+
             renderPresets(modeInfo.presets);
             renderChatHistory();
         }
@@ -394,13 +396,10 @@
         });
 
         clearChatBtn.addEventListener('click', () => {
-            if (chatHistory.length === 0) return;
-            if (confirm(`Deseja limpar o histórico do modo ${MODES[currentMode].name}?`)) {
-                chatHistory = [];
-                localStorage.removeItem('shorye_groq_history_' + currentMode);
-                renderChatHistory();
-                showToast('Histórico apagado!');
-            }
+            chatHistory = [];
+            localStorage.removeItem('shorye_groq_history_' + currentMode);
+            renderChatHistory();
+            showToast('Histórico apagado!');
         });
 
         userInput.addEventListener('keydown', (e) => {
@@ -566,9 +565,11 @@
             const modeInfo = MODES[currentMode];
             const endpoint = "https://api.groq.com/openai/v1/chat/completions";
 
+            const cleanHistory = history.filter(h => !h.content.includes("Erro de Comunicação") && !h.content.includes("decommissioned") && !h.content.includes("does not exist"));
+
             const messages = [
                 { role: "system", content: modeInfo.systemInstruction },
-                ...history.map(h => ({ role: h.role, content: h.content }))
+                ...cleanHistory.map(h => ({ role: h.role, content: h.content }))
             ];
 
             const payload = {
