@@ -173,7 +173,7 @@
                     <option value="pro">Pro</option>
                 </select>
 
-                <button id="openKeyModal" title="Configurar Chave API Gemini" class="p-2 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/60 transition-all relative">
+                <button id="openKeyModal" title="Configurar Chave API Groq" class="p-2 rounded-xl bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 border border-zinc-700/60 transition-all relative">
                     <i class="fa-solid fa-key text-xs"></i>
                     <span id="keyStatusDot" class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500"></span>
                 </button>
@@ -216,8 +216,8 @@
                 </button>
             </form>
             <div class="flex items-center justify-between text-[10px] text-zinc-500 mt-2 px-1 font-mono">
-                <span>Firebase Connected &bull; shorye-ia</span>
-                <span id="activeModelLabel">Model: gemini-3.8-flash</span>
+                <span>Powered by Groq &bull; Llama 3.3</span>
+                <span id="activeModelLabel">Model: llama-3.3-70b-versatile</span>
             </div>
         </div>
     </main>
@@ -226,21 +226,21 @@
         <div class="bg-zinc-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-zinc-800 space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
                 <h3 class="font-bold text-sm text-white flex items-center gap-2">
-                    <i class="fa-solid fa-key text-zinc-400"></i> Configuração de API Key Gemini
+                    <i class="fa-solid fa-key text-zinc-400"></i> Configuração de API Key Groq
                 </h3>
                 <button id="closeKeyModal" class="text-zinc-400 hover:text-white transition-colors">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <p class="text-xs text-zinc-400 leading-relaxed">
-                Insira sua chave de API pessoal do Google AI Studio para garantir acesso imediato e sem limites compartilhados.
+                Insira sua chave de API pessoal da Groq (começa com <code class="text-white">gsk_...</code>) obtida em <a href="https://console.groq.com" target="_blank" class="underline text-zinc-200">console.groq.com</a>.
             </p>
             <div>
-                <label class="block text-[11px] font-semibold text-zinc-400 mb-1 uppercase tracking-wider">Chave API (Gemini)</label>
+                <label class="block text-[11px] font-semibold text-zinc-400 mb-1 uppercase tracking-wider">Chave API (Groq)</label>
                 <input 
                     type="password" 
-                    id="geminiKeyInput" 
-                    placeholder="AIzaSy..." 
+                    id="apiKeyInput" 
+                    placeholder="gsk_..." 
                     class="w-full px-3.5 py-2.5 rounded-xl border border-zinc-800 bg-zinc-950 text-white text-xs focus:outline-none focus:border-zinc-500 transition-colors font-mono"
                 />
             </div>
@@ -258,27 +258,12 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyAesKpeft8RKQqgqjc3ISpp1AN-KpeAtLQ",
-            authDomain: "shorye-ia.firebaseapp.com",
-            projectId: "shorye-ia",
-            storageBucket: "shorye-ia.firebasestorage.app",
-            messagingSenderId: "779814346762",
-            appId: "1:779814346762:web:e91d8d94e953f9882cbff3",
-            measurementId: "G-LK0HMG2GVD"
-        };
-
-        initializeApp(firebaseConfig);
-
-        // Modelo gemini-3.8-flash configurado para todos os modos
         const MODES = {
             basic: {
                 name: "Shorye Basic",
-                model: "gemini-3.8-flash",
+                model: "llama-3.3-70b-versatile",
                 description: "Respostas diretas, rápidas e simples sem enrolação.",
-                systemInstruction: "Você é o Shorye IA no modo Basic. Responda de forma rápida, curta, objetiva e clara.",
+                systemInstruction: "Você é o Shorye IA no modo Basic. Responda de forma rápida, curta, objetiva e clara em português do Brasil.",
                 presets: [
                     { title: "Resumo Rápido", prompt: "Explique o que é Computação em Nuvem em apenas 3 frases simples.", icon: "fa-bolt" },
                     { title: "Pergunta Direta", prompt: "Quais são os 3 países mais populosos do mundo?", icon: "fa-circle-question" },
@@ -287,9 +272,9 @@
             },
             medium: {
                 name: "Shorye Medium",
-                model: "gemini-3.8-flash", 
+                model: "llama-3.3-70b-versatile", 
                 description: "Inteligência analítica avançada e detalhada.",
-                systemInstruction: "Você é o Shorye IA no modo Medium. Você possui raciocínio detalhado, capacidade de criar análises profundas e textos criativos.",
+                systemInstruction: "Você é o Shorye IA no modo Medium. Você possui raciocínio detalhado, capacidade de criar análises profundas e textos criativos em português do Brasil.",
                 presets: [
                     { title: "Análise Profunda", prompt: "Faça uma comparação analítica detalhada entre Energia Solar e Energia Eólica.", icon: "fa-wand-magic-sparkles" },
                     { title: "Redação Criativa", prompt: "Escreva uma introdução cativante para um livro de ficção científica espacial.", icon: "fa-pen-nib" },
@@ -298,9 +283,9 @@
             },
             pro: {
                 name: "Shorye Pro",
-                model: "gemini-3.8-flash",
+                model: "llama-3.3-70b-versatile",
                 description: "Especialista em Programação C++, Arquitetura de Software e Aplicações Web.",
-                systemInstruction: "Você é o Shorye IA no modo Pro, um Engenheiro de Software Sênior especializado em C++, desenvolvimento web completo (HTML5/CSS/JS) e arquitetura de sistemas.",
+                systemInstruction: "Você é o Shorye IA no modo Pro, um Engenheiro de Software Sênior especializado em C++, desenvolvimento web completo (HTML5/CSS/JS) e arquitetura de sistemas. Responda em português do Brasil.",
                 presets: [
                     { title: "C++ Avançado", prompt: "Escreva uma implementação em C++17 de uma Árvore AVL balanceada.", icon: "fa-code" },
                     { title: "Gerar App Web", prompt: "Crie o código de um aplicativo de Lista de Tarefas (Todo) em HTML com Tailwind CSS e JS.", icon: "fa-laptop-code" },
@@ -310,8 +295,8 @@
         };
 
         let currentMode = 'basic';
-        let customApiKey = localStorage.getItem('shorye_custom_gemini_key') || '';
-        let chatHistory = JSON.parse(localStorage.getItem('shorye_history_' + currentMode)) || [];
+        let customApiKey = localStorage.getItem('shorye_groq_api_key') || '';
+        let chatHistory = JSON.parse(localStorage.getItem('shorye_groq_history_' + currentMode)) || [];
         let isGenerating = false;
 
         const chatContainer = document.getElementById('chatContainer');
@@ -331,7 +316,7 @@
         const openKeyModal = document.getElementById('openKeyModal');
         const closeKeyModal = document.getElementById('closeKeyModal');
         const saveKeyBtn = document.getElementById('saveKeyBtn');
-        const geminiKeyInput = document.getElementById('geminiKeyInput');
+        const apiKeyInput = document.getElementById('apiKeyInput');
 
         const renderer = new marked.Renderer();
         renderer.code = function(code, language) {
@@ -377,11 +362,7 @@
             modeDescription.textContent = modeInfo.description;
             activeModelLabel.textContent = `Model: ${modeInfo.model}`;
 
-            chatHistory = JSON.parse(localStorage.getItem('shorye_history_' + currentMode)) || [];
-            
-            // Remove mensagens de erro antigas salvas para não reenviar para a API
-            chatHistory = chatHistory.filter(msg => msg.parts && msg.parts[0] && !msg.parts[0].text.includes("Erro de Comunicação"));
-
+            chatHistory = JSON.parse(localStorage.getItem('shorye_groq_history_' + currentMode)) || [];
             renderPresets(modeInfo.presets);
             renderChatHistory();
         };
@@ -395,7 +376,7 @@
         }
 
         openKeyModal.addEventListener('click', () => {
-            geminiKeyInput.value = customApiKey;
+            apiKeyInput.value = customApiKey;
             keyModal.classList.remove('hidden');
         });
 
@@ -404,19 +385,22 @@
         });
 
         saveKeyBtn.addEventListener('click', () => {
-            const val = geminiKeyInput.value.trim();
+            const val = apiKeyInput.value.trim();
             customApiKey = val;
-            localStorage.setItem('shorye_custom_gemini_key', val);
+            localStorage.setItem('shorye_groq_api_key', val);
             updateKeyStatus();
             keyModal.classList.add('hidden');
-            showToast('Chave API atualizada!');
+            showToast('Chave API da Groq salva!');
         });
 
         clearChatBtn.addEventListener('click', () => {
-            chatHistory = [];
-            localStorage.removeItem('shorye_history_' + currentMode);
-            renderChatHistory();
-            showToast('Histórico apagado!');
+            if (chatHistory.length === 0) return;
+            if (confirm(`Deseja limpar o histórico do modo ${MODES[currentMode].name}?`)) {
+                chatHistory = [];
+                localStorage.removeItem('shorye_groq_history_' + currentMode);
+                renderChatHistory();
+                showToast('Histórico apagado!');
+            }
         });
 
         userInput.addEventListener('keydown', (e) => {
@@ -465,7 +449,7 @@
             }
             welcomeScreen.classList.add('hidden');
             chatHistory.forEach(msg => {
-                appendMessageUI(msg.role, msg.parts[0].text);
+                appendMessageUI(msg.role, msg.content);
             });
             scrollToBottom();
         }
@@ -530,116 +514,3 @@
 
         chatForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const text = userInput.value.trim();
-            if (!text || isGenerating) return;
-
-            appendMessageUI('user', text);
-            userInput.value = '';
-            userInput.style.height = 'auto';
-
-            chatHistory.push({ role: 'user', parts: [{ text }] });
-
-            appendTypingIndicator();
-            isGenerating = true;
-            sendBtn.disabled = true;
-
-            try {
-                const responseText = await fetchGeminiAPI(chatHistory);
-                removeTypingIndicator();
-                appendMessageUI('model', responseText);
-                chatHistory.push({ role: 'model', parts: [{ text: responseText }] });
-                localStorage.setItem('shorye_history_' + currentMode, JSON.stringify(chatHistory));
-            } catch (err) {
-                removeTypingIndicator();
-                showToast(err.message, 'fa-triangle-exclamation text-amber-400');
-                appendMessageUI('model', `⚠️ **Erro de Comunicação:** ${err.message}. Dica: Clique na chave (🔑) no topo e verifique sua chave de API pessoal do Google AI Studio.`);
-            } finally {
-                isGenerating = false;
-                sendBtn.disabled = false;
-                userInput.focus();
-            }
-        });
-
-        async function fetchGeminiAPI(history) {
-            const modeInfo = MODES[currentMode];
-            const activeKey = customApiKey || firebaseConfig.apiKey;
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modeInfo.model}:generateContent?key=${activeKey}`;
-
-            // Filtra o histórico antes do envio para eliminar mensagens de erro acumuladas
-            const cleanHistory = history.filter(h => h.parts && h.parts[0] && !h.parts[0].text.includes("Erro de Comunicação"));
-
-            const payload = {
-                contents: cleanHistory,
-                systemInstruction: {
-                    parts: [{ text: modeInfo.systemInstruction }]
-                }
-            };
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-            try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload),
-                    signal: controller.signal
-                });
-                clearTimeout(timeoutId);
-
-                const data = await res.json();
-                if (!res.ok) {
-                    throw new Error(data.error?.message || `Erro HTTP (${res.status})`);
-                }
-
-                const candidate = data.candidates?.[0];
-                if (candidate && candidate.content?.parts?.[0]?.text) {
-                    return candidate.content.parts[0].text;
-                } else {
-                    throw new Error("A resposta da API veio vazia ou em formato desconhecido.");
-                }
-            } catch (err) {
-                if (err.name === 'AbortError') {
-                    throw new Error("A requisição demorou muito e expirou (Timeout).");
-                }
-                throw err;
-            }
-        }
-
-        function updateKeyStatus() {
-            if (customApiKey) {
-                keyStatusDot.className = "absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-500";
-            } else {
-                keyStatusDot.className = "absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-500";
-            }
-        }
-
-        window.copyStoredCode = (id) => {
-            const val = window[id];
-            if (val) {
-                navigator.clipboard.writeText(val).then(() => {
-                    showToast('Copiado para a área de transferência!');
-                });
-            }
-        };
-
-        function showToast(msg, icon = 'fa-check text-emerald-400') {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            const toastIcon = document.getElementById('toastIcon');
-
-            toastIcon.className = `fa-solid ${icon}`;
-            toastMsg.textContent = msg;
-
-            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
-            }, 3000);
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-    </script>
-</body>
-</html>
